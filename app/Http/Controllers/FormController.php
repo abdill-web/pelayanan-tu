@@ -10,7 +10,15 @@ use App\Models\Survey;
 use App\Models\Yudisium;
 use App\Models\RequestKelas;
 use App\Models\KoreksiNilai;
+use App\Models\KoreksiKHS;
 use App\Mail\FormSubmitted;
+use App\Models\LegalisirRequest;
+use App\Models\TurnitinRequest;
+use App\Models\HasilPlagiarism;
+use App\Models\PindahProgramKuliah;
+use App\Models\PindahProgramStudi;
+use App\Models\PengunduranDiri;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
 
 class FormController extends Controller
@@ -183,8 +191,18 @@ class FormController extends Controller
         return view('forms.tu_online.koreksi_khs');
     }
 
-    public function submitKoreksiKhs(Request $request)
+    public function submitKoreksiKHS(Request $request)
     {
+        $data = $request->validate([
+            'nama' => 'required|string',
+            'nim' => 'required|string',
+            'program_studi' => 'required|string',
+            'semester' => 'required|string',
+            'keterangan' => 'required|string',
+        ]);
+    
+        KoreksiKHS::create($data);
+    
         return back()->with('success', 'Form Koreksi KHS berhasil dikirim.');
     }
 
@@ -195,7 +213,23 @@ class FormController extends Controller
 
     public function submitLegalisir(Request $request)
     {
-        return back()->with('success', 'Form Pengajuan Legalisir berhasil dikirim.');
+        $data = $request->validate([
+            'nama' => 'required|string',
+            'nim' => 'required|string',
+            'email' => 'required|email',
+            'program_studi' => 'required|string',
+            'file_ijazah' => 'required|mimes:pdf|max:2048'
+        ]);
+
+        $path = $request->file('file_ijazah')->store('legalisir', 'public');
+        $data['file_ijazah'] = $path;
+    
+        LegalisirRequest::create($data);
+    
+        // Email kirim konfirmasi
+        Mail::to($data['email'])->send(new \App\Mail\FormSubmitted($data, 'Pengajuan Legalisir'));
+    
+        return back()->with('success', 'Form berhasil dikirim.');
     }
 
     public function cekTurnitinForm()
@@ -205,18 +239,54 @@ class FormController extends Controller
 
     public function submitCekTurnitin(Request $request)
     {
-        return back()->with('success', 'Form Pengajuan Cek Turnitin berhasil dikirim.');
+        $validated = $request->validate([
+            'nama' => 'required',
+            'nim' => 'required',
+            'email' => 'required|email',
+            'program_studi' => 'required',
+            'judul' => 'required',
+            'file_pdf' => 'required|mimes:pdf|max:2048',
+        ]);
+    
+        $filePath = $request->file('file_pdf')->store('turnitin');
+    
+        TurnitinRequest::create([
+            'nama' => $validated['nama'],
+            'nim' => $validated['nim'],
+            'email' => $validated['email'],
+            'program_studi' => $validated['program_studi'],
+            'judul' => $validated['judul'],
+            'file_pdf' => $filePath,
+        ]);
+    
+        // (Opsional) Kirim email konfirmasi
+        Mail::raw('Pengajuan Cek Turnitin Anda berhasil dikirim.', function ($message) use ($validated) {
+            $message->to($validated['email'])
+                    ->subject('Konfirmasi Pengajuan Turnitin');
+        });
+    
+        return redirect()->back()->with('success', 'Pengajuan berhasil dikirim.');
     }
 
-    public function hasilPlagiarismForm()
+    public function showPermintaanTurnitin()
     {
         return view('forms.tu_online.hasil_plagiarism');
     }
-
-    public function submitHasilPlagiarism(Request $request)
+    public function submitHasilPlagiarismForm(Request $request)
     {
-        return back()->with('success', 'Form Permintaan Hasil Cek Plagiarism berhasil dikirim.');
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'nim' => 'required|string|max:20',
+            'email' => 'required|email',
+            'judul' => 'required|string|max:255',
+            'catatan' => 'nullable|string',
+        ]);
+    
+        HasilPlagiarism::create($validated);
+    
+        return redirect()->back()->with('success', 'Data berhasil dikirim.');
     }
+    
 
     public function pindahProgramKuliahForm()
     {
@@ -225,7 +295,19 @@ class FormController extends Controller
 
     public function submitPindahProgramKuliah(Request $request)
     {
-        return back()->with('success', 'Form Pindah Program Kuliah berhasil dikirim.');
+        $validated = $request->validate([
+            'nama' => 'required|string',
+            'nim' => 'required|string',
+            'email' => 'required|email',
+            'program_studi' => 'required|string',
+            'program_asal' => 'required|in:Reguler 1,Reguler 2',
+            'program_tujuan' => 'required|in:Reguler 1,Reguler 2',
+            'alasan' => 'required|string',
+        ]);
+    
+        PindahProgramKuliah::create($validated);
+    
+        return redirect()->back()->with('success', 'Permohonan pindah program kuliah berhasil dikirim.');
     }
 
     public function pindahProgramStudiForm()
@@ -235,7 +317,18 @@ class FormController extends Controller
 
     public function submitPindahProgramStudi(Request $request)
     {
-        return back()->with('success', 'Form Pindah Program Studi berhasil dikirim.');
+        $request->validate([
+            'nama' => 'required',
+            'nim' => 'required',
+            'email' => 'required|email',
+            'program_studi_asal' => 'required',
+            'program_studi_tujuan' => 'required',
+            'alasan' => 'required',
+        ]);
+    
+        PindahProgramStudi::create($request->all());
+    
+        return back()->with('success', 'Pengajuan berhasil dikirim.');
     }
 
     public function pengunduranDiriForm()
@@ -245,6 +338,41 @@ class FormController extends Controller
 
     public function submitPengunduranDiri(Request $request)
     {
-        return back()->with('success', 'Form Pengajuan Pengunduran Diri berhasil dikirim.');
+        $request->validate([
+            'nama' => 'required',
+            'nim' => 'required',
+            'email' => 'required|email',
+            'program_studi' => 'required',
+            'alasan' => 'required',
+        ]);
+    
+        PengunduranDiri::create($request->all());
+    
+        return back()->with('success', 'Pengajuan pengunduran diri berhasil dikirim.');
     }
+
+    public function downloadLegalisir($id)
+    {
+    $data = LegalisirRequest::findOrFail($id);
+    $filePath = $data->file_ijazah;
+
+    if (Storage::exists($filePath)) {
+        return Storage::download($filePath);
+    }
+
+    return redirect()->back()->with('error', 'File ijazah tidak ditemukan.');
+    }
+
+    public function downloadTurnitin($id)
+    {
+    $data = TurnitinRequest::findOrFail($id);
+    $filePath = $data->file_pdf;
+
+    if (Storage::exists($filePath)) {
+        return Storage::download($filePath);
+    }
+
+    return redirect()->back()->with('error', 'File turnitin tidak ditemukan.');
+    }
+
 }

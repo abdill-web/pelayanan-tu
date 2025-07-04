@@ -20,10 +20,7 @@
                         <a href="{{ route('home') }}" class="text-xl font-bold hover:underline block">Fakultas Teknik</a>
                     </div>
                 </div>
-                {{-- Navigasi tambahan jika perlu --}}
-                {{-- <nav>
-                    <a href="#" class="text-blue-100 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Link</a>
-                </nav> --}}
+                {{-- Tombol Login Admin --}}
             </div>
         </div>
     </header>
@@ -34,7 +31,7 @@
 
     <footer class="bg-gray-800 text-gray-300 text-sm mt-12">
         <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center">
-             &copy; {{ date('Y') }} Fakultas Teknik. All rights reserved.
+            &copy; {{ date('Y') }} Fakultas Teknik. All rights reserved.
         </div>
     </footer>
 

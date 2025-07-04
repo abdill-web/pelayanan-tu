@@ -1,58 +1,90 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-3xl mx-auto py-10 px-4">
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Formulir Koreksi Nilai</h2>
+    <div class="max-w-3xl mx-auto bg-white px-6 sm:px-10 lg:px-12 py-10 shadow-2xl rounded-3xl border border-gray-200">
+        <h2 class="text-3xl font-bold text-center text-blue-700 mb-8">
+            Formulir Koreksi Nilai
+        </h2>
 
-    @if (session('success'))
-        <div class="mb-6 p-4 rounded-lg bg-green-100 text-green-700">
-            {{ session('success') }}
-        </div>
-    @endif
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-300 text-green-800 px-6 py-4 rounded-lg mb-8 text-sm shadow">
+                ✅ {{ session('success') }}
+            </div>
+        @endif
 
-    <form action="{{ route('koreksi-nilai.submit') }}" method="POST" class="space-y-6 bg-white p-8 rounded-2xl shadow-md">
-        @csrf
+        <form action="{{ route('koreksi-nilai.submit') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-y-6 md:gap-x-8">
+            @csrf
 
-        <div>
-            <label class="block text-gray-700 mb-2">Nama</label>
-            <input type="text" name="nama" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-        </div>
+            {{-- Nama --}}
+            <div>
+                <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                <input type="text" name="nama" id="nama" value="{{ old('nama') }}"
+                    class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required placeholder="Nama lengkap">
+                @error('nama') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        <div>
-            <label class="block text-gray-700 mb-2">NIM</label>
-            <input type="text" name="nim" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-        </div>
+            {{-- NIM --}}
+            <div>
+                <label for="nim" class="block text-sm font-medium text-gray-700 mb-1">NIM</label>
+                <input type="text" name="nim" id="nim" value="{{ old('nim') }}"
+                    class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required placeholder="Nomor Induk Mahasiswa">
+                @error('nim') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        <div>
-            <label class="block text-gray-700 mb-2">Program Studi</label>
-            <input type="text" name="program_studi" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-        </div>
+            {{-- Program Studi --}}
+            <div class="md:col-span-2">
+                <label for="program_studi" class="block text-sm font-medium text-gray-700 mb-1">Program Studi</label>
+                <input type="text" name="program_studi" id="program_studi" value="{{ old('program_studi') }}"
+                    class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required placeholder="Contoh: Teknik Sipil">
+                @error('program_studi') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        <div>
-            <label class="block text-gray-700 mb-2">Mata Kuliah</label>
-            <input type="text" name="mata_kuliah" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-        </div>
+            {{-- Mata Kuliah --}}
+            <div class="md:col-span-2">
+                <label for="mata_kuliah" class="block text-sm font-medium text-gray-700 mb-1">Mata Kuliah</label>
+                <input type="text" name="mata_kuliah" id="mata_kuliah" value="{{ old('mata_kuliah') }}"
+                    class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required placeholder="Nama mata kuliah yang ingin dikoreksi">
+                @error('mata_kuliah') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        <div>
-            <label class="block text-gray-700 mb-2">Dosen Pengampu</label>
-            <input type="text" name="dosen_pengampu" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-        </div>
+            {{-- Dosen Pengampu --}}
+            <div class="md:col-span-2">
+                <label for="dosen_pengampu" class="block text-sm font-medium text-gray-700 mb-1">Dosen Pengampu</label>
+                <input type="text" name="dosen_pengampu" id="dosen_pengampu" value="{{ old('dosen_pengampu') }}"
+                    class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required placeholder="Nama dosen pengampu mata kuliah">
+                @error('dosen_pengampu') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        <div>
-            <label class="block text-gray-700 mb-2">Semester</label>
-            <input type="text" name="semester" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-        </div>
+            {{-- Semester --}}
+            <div class="md:col-span-2">
+                <label for="semester" class="block text-sm font-medium text-gray-700 mb-1">Semester</label>
+                <input type="text" name="semester" id="semester" value="{{ old('semester') }}"
+                    class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required placeholder="Contoh: Genap 2024/2025">
+                @error('semester') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        <div>
-            <label class="block text-gray-700 mb-2">Alasan Koreksi</label>
-            <textarea name="alasan_koreksi" rows="4" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required></textarea>
-        </div>
+            {{-- Alasan Koreksi --}}
+            <div class="md:col-span-2">
+                <label for="alasan_koreksi" class="block text-sm font-medium text-gray-700 mb-1">Alasan Koreksi</label>
+                <textarea name="alasan_koreksi" id="alasan_koreksi" rows="4"
+                    class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required placeholder="Jelaskan alasan koreksi nilai secara singkat dan jelas">{{ old('alasan_koreksi') }}</textarea>
+                @error('alasan_koreksi') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        <div class="flex justify-end">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-                Kirim
-            </button>
-        </div>
-    </form>
-</div>
+            {{-- Tombol Submit --}}
+            <div class="md:col-span-2 pt-4">
+                <button type="submit"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-md transition duration-200">
+                    Kirim Permintaan Koreksi
+                </button>
+            </div>
+        </form>
+    </div>
 @endsection

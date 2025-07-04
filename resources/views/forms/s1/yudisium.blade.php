@@ -1,96 +1,106 @@
 @extends('layouts.app')
 
 @section('content')
-{{-- Container Card untuk Form --}}
-<div class="max-w-xl mx-auto bg-white p-6 md:p-8 shadow-lg rounded-xl">
-    <h2 class="text-2xl md:text-3xl font-semibold text-gray-800 mb-6 border-b pb-4">
-        Form Pengajuan Yudisium
-    </h2>
+<div class="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto bg-white p-10 rounded-2xl shadow-2xl border border-gray-200">
+        <h2 class="text-3xl font-extrabold text-blue-700 text-center mb-10">
+            Form Pengajuan Yudisium
+        </h2>
 
-    {{-- Pesan Sukses --}}
-    @if (session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-sm" role="alert">
-            <p class="font-bold">Sukses!</p>
-            <p>{{ session('success') }}</p>
-        </div>
-    @endif
+        {{-- Pesan Sukses --}}
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-800 px-6 py-4 rounded-lg mb-8 shadow">
+                <strong>✅ Sukses!</strong>
+                <p>{{ session('success') }}</p>
+            </div>
+        @endif
 
-    {{-- Form --}}
-    <form method="POST" action="{{ route('s1.submitYudisium') }}" class="space-y-6">
-        @csrf
+        <form method="POST" action="{{ route('s1.submitYudisium') }}" class="space-y-6">
+            @csrf
 
-        {{-- Nama --}}
-        <div>
-            <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-            <input type="text" name="nama" id="nama"
-                   class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                   required placeholder="Masukkan nama lengkap Anda">
-        </div>
+            {{-- Nama --}}
+            <div>
+                <label for="nama" class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
+                <input type="text" name="nama" id="nama" value="{{ old('nama') }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required placeholder="Masukkan nama lengkap Anda">
+                @error('nama') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        {{-- NIM --}}
-        <div>
-            <label for="nim" class="block text-sm font-medium text-gray-700 mb-1">Nomor Induk Mahasiswa (NIM)</label>
-            <input type="text" name="nim" id="nim"
-                   class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                   required placeholder="Masukkan NIM Anda">
-        </div>
+            {{-- NIM --}}
+            <div>
+                <label for="nim" class="block text-sm font-semibold text-gray-700 mb-2">NIM</label>
+                <input type="text" name="nim" id="nim" value="{{ old('nim') }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required placeholder="Masukkan NIM Anda">
+                @error('nim') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        {{-- Email --}}
-        <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Alamat Email</label>
-            <input type="email" name="email" id="email"
-                   class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                   required placeholder="contoh@email.com">
-        </div>
+            {{-- Email --}}
+            <div>
+                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                <input type="email" name="email" id="email" value="{{ old('email') }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required placeholder="contoh@email.com">
+                @error('email') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        {{-- Program Studi --}}
-        <div>
-            <label for="program_studi" class="block text-sm font-medium text-gray-700 mb-1">Program Studi</label>
-            <input type="text" name="program_studi" id="program_studi"
-                   class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                   required placeholder="Masukkan program studi Anda">
-        </div>
+            {{-- Program Studi --}}
+            <div>
+                <label for="program_studi" class="block text-sm font-semibold text-gray-700 mb-2">Program Studi</label>
+                <select name="program_studi" id="program_studi"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required>
+                    <option value="">-- Pilih Program Studi --</option>
+                    <option value="Arsitektur" {{ old('program_studi') == 'Arsitektur' ? 'selected' : '' }}>Arsitektur</option>
+                    <option value="Teknik Sipil" {{ old('program_studi') == 'Teknik Sipil' ? 'selected' : '' }}>Teknik Sipil</option>
+                    <option value="Teknik Elektro" {{ old('program_studi') == 'Teknik Elektro' ? 'selected' : '' }}>Teknik Elektro</option>
+                    <option value="Teknik Mesin" {{ old('program_studi') == 'Teknik Mesin' ? 'selected' : '' }}>Teknik Mesin</option>
+                    <option value="Teknik Industri" {{ old('program_studi') == 'Teknik Industri' ? 'selected' : '' }}>Teknik Industri</option>
+                </select>
+                @error('program_studi') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        {{-- Angkatan --}}
-        <div>
-            <label for="angkatan" class="block text-sm font-medium text-gray-700 mb-1">Angkatan</label>
-            <input type="text" name="angkatan" id="angkatan"
-                   class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                   required placeholder="Contoh: 2021">
-        </div>
+            {{-- Angkatan --}}
+            <div>
+                <label for="angkatan" class="block text-sm font-semibold text-gray-700 mb-2">Angkatan</label>
+                <select name="angkatan" id="angkatan"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required>
+                    <option value="">-- Pilih Angkatan --</option>
+                    @for ($year = date('Y'); $year >= 2015; $year--)
+                        <option value="{{ $year }}" {{ old('angkatan') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                    @endfor
+                </select>
+                @error('angkatan') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        {{-- IPK --}}
-        <div>
-            <label for="ipk" class="block text-sm font-medium text-gray-700 mb-1">Indeks Prestasi Kumulatif (IPK)</label>
-            <input type="number" step="0.01" name="ipk" id="ipk"
-                   class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                   required placeholder="Contoh: 3.45">
-        </div>
+            {{-- IPK --}}
+            <div>
+                <label for="ipk" class="block text-sm font-semibold text-gray-700 mb-2">IPK</label>
+                <input type="number" step="0.01" name="ipk" id="ipk" value="{{ old('ipk') }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required placeholder="Contoh: 3.45">
+                @error('ipk') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        {{-- Judul Tugas Akhir --}}
-        <div>
-            <label for="judul_ta" class="block text-sm font-medium text-gray-700 mb-1">Judul Tugas Akhir</label>
-            <textarea name="judul_ta" id="judul_ta" rows="3"
-                      class="mt-1 block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      required placeholder="Masukkan judul tugas akhir Anda"></textarea>
-        </div>
+            {{-- Judul Tugas Akhir --}}
+            <div>
+                <label for="judul_ta" class="block text-sm font-semibold text-gray-700 mb-2">Judul Tugas Akhir</label>
+                <textarea name="judul_ta" id="judul_ta" rows="3"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required placeholder="Masukkan judul tugas akhir Anda">{{ old('judul_ta') }}</textarea>
+                @error('judul_ta') <p class="text-sm text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
 
-        {{-- Tombol Submit --}}
-        <div class="pt-5">
-            <button type="submit"
-                    class="w-full inline-flex justify-center py-3 px-6 border border-transparent shadow-sm 
-                    text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 
-                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Kirim Pengajuan Yudisium
-            </button>
-        </div>
-    </form>
+            {{-- Tombol Submit --}}
+            <div class="pt-6">
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition duration-200">
+                    Kirim Pengajuan Yudisium
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection
